@@ -1,0 +1,64 @@
+name: Build and Publish Web App
+
+on:
+  workflow_dispatch:
+    inputs:
+        service:
+          required: true
+          type: choice
+          description: 'Choose the service you wish to build and deploy'
+          options: 
+            - uselessfact
+            - funnyfact
+env:
+  SERVIES_URLS: '''{"funnyfact":"https://api.chucknorris.io/jokes/random", "uselessfact":"https://uselessfacts.jsph.pl/api/v2/facts/random"}'''
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Bump version
+        uses: remorses/bump-version@js
+        with:
+            version_file: ./VERSION
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Get New Version Number
+        id: version
+        run: |
+            version=$(echo VERSION)
+            echo "VERSION=$version" >> $GITHUB_OUTPUT
+
+      - name: Docker Login
+        uses: docker/login-action@v2.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v3.1.1
+        with:
+          file: Dockerfile
+          context: .
+          push: true
+          tags:  ghcr.io/shimonelbaz/moon_active_task:latest , ghcr.io/shimonelbaz/moon_active_task:${{ steps.version.outputs.VERSION }}
+            
+#      - name: Deploy to Lab Environment
+#        uses: cancue/eks-action@9110bc7b42f9adfdb578636aa94cfc50d97c0d99
+#        env:
+#          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws_region: us-east-1
+#          cluster_name: vorlon-dev
+#        with:
+#          args: |
+#            aws eks update-kubeconfig --region us-east-1 --name vorlon-dev
+#            kubectl -n lab rollout restart deployment mock-server-deployment &&
+#            kubectl -n lab rollout status deployment mock-server-deployment
