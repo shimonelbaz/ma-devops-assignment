@@ -33,7 +33,7 @@ jobs:
       - name: Get New Version Number
         id: version
         run: |
-            version=$(echo VERSION)
+            version=$(cat VERSION)
             echo "VERSION=$version" >> $GITHUB_OUTPUT
 
       - name: Docker Login
