@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   #name: {{ .Chart.Name }}
   name: {{ .Values.service.name }}
+  namespace: {{ .Release.Namespace }}
   labels:
     kcert.dev/ingress: "managed"
   annotations:
@@ -16,7 +17,7 @@ spec:
   - host: {{ .Values.service.hostname }}
     http:
       paths:
-      - path: /{{ .Chart.Name }}
+      - path: /{{ .Values.service.name }}
         pathType: Prefix
         backend:
           service:
