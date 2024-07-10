@@ -10,6 +10,7 @@ The workflows takes a few assumptions and corresponding desicions:
 2. The version needs to be build at every execution of the workflow (meaning the versions is always bumped and there is no point in saving previous values)
 3. All webapps will be deployed to the same namespace: webapp
 4. No need to expose the openAPI interactive documentation page
+5. Github Action can securly connect to Kubernetes clusterwawa
 ---
 
 ### Prerequisites
@@ -37,5 +38,8 @@ Once the deployment id done, the services can be used in the following ways:
 Adding a new service is simple:
 1. Edit the workflow file - .github/workflows/build.yaml
 2. Add the service name to the inputs list of the workflow
-3. Add the service information [name, URL, port (choose any free one)] to the SERVICE_PARAMETERS json 
-4. Note, if the response from the API is not a json or that the requested value is not in the fields called - text, value - it needs to be added to the python code, otherwise the response will always be the raw one.
+3. Add the service information [name, URL, port (choose any free one)] to the SERVICE_PARAMETERS json.
+
+    Note: This can be replaced with values files per service.
+
+4. Notice, if the response from the API is not a json or that the requested value is not in the fields called - text, value - it needs to be added to the python code, otherwise the response will always be the raw one.
