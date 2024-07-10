@@ -67,7 +67,7 @@ jobs:
       - name: Deploy Using Helm
         uses: vimeda/helm@v1.7.0
         with:
-          release: webapp-${{ steps.version.outputs.VERSION }}
+          release: webapp
           namespace: webapp
           chart: app
           token: ${{ github.token }}
