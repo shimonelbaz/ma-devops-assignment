@@ -8,6 +8,8 @@ metadata:
     kcert.dev/ingress: "managed"
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+
 spec:
   tls:
   - hosts:
@@ -17,7 +19,7 @@ spec:
   - host: {{ .Values.service.hostname }}
     http:
       paths:
-      - path: /{{ .Values.service.name }}
+      - path: /{{ .Values.service.name }}(/|$)(.*)
         pathType: Prefix
         backend:
           service:
