@@ -68,31 +68,19 @@ jobs:
       - name: Deploy Using Helm            
         uses: WyriHaximus/github-action-helm3@v3
         with:
-            exec: helm upgrade ${{ inputs.service }} charts/app/ --install --wait --atomic --namespace=webapp --set image.tag='${{ steps.version.outputs.VERSION }}' --set image.repository='${{ env.IMAGE_REPO }}' --set env.API_URL='${{ steps.service-parameters.outputs.URL }}' --set env.LISTEN_PORT='${{ steps.service-parameters.outputs.PORT }}' --set service.port='${{ steps.service-parameters.outputs.PORT }}' --set service.name='${{ inputs.service }}' --set  service.hostname='${{ env.DNS_NAME }}'
+            exec: helm upgrade ${{ inputs.service }} charts/app/ --install --wait --atomic --namespace=webapp --set image.tag='${{ steps.version.outputs.VERSION }}' --set image.repository='${{ env.IMAGE_REPO }}' --set env.API_URL='${{ steps.service-parameters.outputs.URL }}' --set env.LISTEN_PORT=${{ steps.service-parameters.outputs.PORT }} --set service.port='${{ steps.service-parameters.outputs.PORT }}' --set service.name='${{ inputs.service }}' --set  service.hostname='${{ env.DNS_NAME }}'
             kubeconfig: ${{ secrets.KUBECONFIG }}
             overrule_existing_kubeconfig: true
- 
- 
-      # Deploy using Helm charts
-      #- name: Deploy Using Helm
-      #  uses: vimeda/helm@v1.7.0
-      #  with:
-      #    release: webapp
-      #    namespace: webapp
-      #    chart: app
-      #    token: ${{ github.token }}
-      #    atomic: true
-      #    version: ${{ steps.version.outputs.VERSION }}
-      #    values: |
-      #      image.tag: ${{ steps.version.outputs.VERSION }}
-      #      env.API_URL: ${{ steps.service-parameters.outputs.URL }}
-      #      service.port: ${{ steps.service-parameters.outputs.PORT }}
-      #      service.name: ${{ inputs.service }}
-      #      service.hostname: ${{ env.DNS_NAME }}
-      #  env:
-      #    KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
+  
+      # Run Tests
+      - name: Test Deployed Service
+        run: |
+          ready_status=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.DNS_NAME }}/${{ inputs.service }}/ready)
+          api_status=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.DNS_NAME }}/${{ inputs.service }})
+          if (( $ready_status != 200 || $api_status != 200 )); then
+            echo "Endpoints Are Failing!"
+            exit 1
+          else
+            echo "Endpoints Response Is OK!"
+          fi
     
-    # Run Tests
-    
-    
-    #helm install ${{ inputs.service }} helm/ --set image.tag=${{ steps.version.outputs.VERSION }} --set env.API_URL=http://new-api-url.com --set service.port=XXXX --set service.name=XXXX --set  service.hostname=XXXX
