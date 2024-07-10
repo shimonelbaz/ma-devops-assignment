@@ -1,0 +1,15 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/shimonelbaz/moon_active_task
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: my-service
+  type: Service
+  port: 8000
+  hostname: localhost
+
+env:
+  API_URL: "http://example.com/api"
