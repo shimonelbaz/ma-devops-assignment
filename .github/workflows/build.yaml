@@ -64,8 +64,8 @@ jobs:
           tags:  ghcr.io/shimonelbaz/moon_active_task:latest , ghcr.io/shimonelbaz/moon_active_task:${{ steps.version.outputs.VERSION }}
             
     # Deploy using Helm charts
-      - name: 'Deploy Using Helm'
-        uses: 'deliverybot/helm@v1'
+      - name: Deploy Using Helm
+        uses: vimeda/helm@v1.7.0
         with:
           release: webapp-${{ steps.version.outputs.VERSION }}
           namespace: webapp
