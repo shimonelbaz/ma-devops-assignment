@@ -12,7 +12,7 @@ spec:
   tls:
   - hosts:
     - {{ .Values.service.hostname }}
-    secretName: {{ .Chart.Name }}
+    secretName: {{ .Values.service.hostname }}
   rules:
   - host: {{ .Values.service.hostname }}
     http:

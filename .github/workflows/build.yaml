@@ -11,6 +11,7 @@ on:
             - uselessfact
             - funnyfact
 env:
+  IMAGE_REPO: 'ghcr.io/shimonelbaz/moon_active_task'
   DNS_NAME: "excercise.elbaz.io"
   SERVICE_PARAMETERS: '''{
                       "funnyfact":{"url":"https://api.chucknorris.io/jokes/random", "port":"8000"}, 
@@ -67,7 +68,7 @@ jobs:
       - name: Deploy Using Helm            
         uses: WyriHaximus/github-action-helm3@v3
         with:
-            exec: helm upgrade ${{ inputs.service }} charts/app/ --install --wait --atomic --namespace=webapp --set image.tag=${{ steps.version.outputs.VERSION }} --set env.API_URL=${{ steps.service-parameters.outputs.URL }} --set service.port=${{ steps.service-parameters.outputs.PORT }} --set service.name=${{ inputs.service }} --set  service.hostname=${{ env.DNS_NAME }}
+            exec: helm upgrade ${{ inputs.service }} charts/app/ --install --wait --atomic --namespace=webapp --set image.tag='${{ steps.version.outputs.VERSION }}' --set image.repository='${{ env.IMAGE_REPO }}' --set env.API_URL='${{ steps.service-parameters.outputs.URL }}' --set env.LISTEN_PORT='${{ steps.service-parameters.outputs.PORT }}' --set service.port='${{ steps.service-parameters.outputs.PORT }}' --set service.name='${{ inputs.service }}' --set  service.hostname='${{ env.DNS_NAME }}'
             kubeconfig: ${{ secrets.KUBECONFIG }}
             overrule_existing_kubeconfig: true
  
