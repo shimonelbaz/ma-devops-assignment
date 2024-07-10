@@ -72,6 +72,7 @@ jobs:
           chart: app
           token: ${{ github.token }}
           atomic: true
+          version: ${{ steps.version.outputs.VERSION }}
           values: |
             image.tag: ${{ steps.version.outputs.VERSION }}
             env.API_URL: ${{ steps.service-parameters.outputs.URL }}
