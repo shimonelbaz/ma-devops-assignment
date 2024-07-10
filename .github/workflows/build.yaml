@@ -11,10 +11,10 @@ on:
             - uselessfact
             - funnyfact
 env:
-  DNS_NAME: "SOME DOMAIN"
+  DNS_NAME: "excercise.elbaz.io"
   SERVICE_PARAMETERS: '''{
                       "funnyfact":{"url":"https://api.chucknorris.io/jokes/random", "port":"8000"}, 
-                      "uselessfact":{"url":"https://uselessfacts.jsph.pl/api/v2/facts/random","port":"8001"
+                      "uselessfact":{"url":"https://uselessfacts.jsph.pl/api/v2/facts/random","port":"8001"}
                       }'''
 
 jobs:
@@ -69,7 +69,7 @@ jobs:
         with:
           release: webapp-${{ steps.version.outputs.VERSION }}
           namespace: webapp
-          chart: helm/
+          chart: helm/chart.yaml
           token: ${{ github.token }}
           atomic: true
           values: |
