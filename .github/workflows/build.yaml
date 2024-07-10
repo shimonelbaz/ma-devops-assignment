@@ -62,25 +62,34 @@ jobs:
           context: .
           push: true
           tags:  ghcr.io/shimonelbaz/moon_active_task:latest , ghcr.io/shimonelbaz/moon_active_task:${{ steps.version.outputs.VERSION }}
-            
-    # Deploy using Helm charts
-      - name: Deploy Using Helm
-        uses: vimeda/helm@v1.7.0
+
+      # Deploy using Helm charts
+      - name: Deploy Using Helm            
+        uses: WyriHaximus/github-action-helm3@v3
         with:
-          release: webapp
-          namespace: webapp
-          chart: app
-          token: ${{ github.token }}
-          atomic: true
-          version: ${{ steps.version.outputs.VERSION }}
-          values: |
-            image.tag: ${{ steps.version.outputs.VERSION }}
-            env.API_URL: ${{ steps.service-parameters.outputs.URL }}
-            service.port: ${{ steps.service-parameters.outputs.PORT }}
-            service.name: ${{ inputs.service }}
-            service.hostname: ${{ env.DNS_NAME }}
-        env:
-          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
+            exec: helm upgrade ${{ inputs.service }} charts/app/ --install --wait --atomic --namespace=webapp --set image.tag=${{ steps.version.outputs.VERSION }} --set env.API_URL=${{ steps.service-parameters.outputs.URL }} --set service.port=${{ steps.service-parameters.outputs.PORT }} --set service.name=${{ inputs.service }} --set  service.hostname=${{ env.DNS_NAME }}
+            kubeconfig: ${{ secrets.KUBECONFIG }}
+            overrule_existing_kubeconfig: true
+ 
+ 
+      # Deploy using Helm charts
+      #- name: Deploy Using Helm
+      #  uses: vimeda/helm@v1.7.0
+      #  with:
+      #    release: webapp
+      #    namespace: webapp
+      #    chart: app
+      #    token: ${{ github.token }}
+      #    atomic: true
+      #    version: ${{ steps.version.outputs.VERSION }}
+      #    values: |
+      #      image.tag: ${{ steps.version.outputs.VERSION }}
+      #      env.API_URL: ${{ steps.service-parameters.outputs.URL }}
+      #      service.port: ${{ steps.service-parameters.outputs.PORT }}
+      #      service.name: ${{ inputs.service }}
+      #      service.hostname: ${{ env.DNS_NAME }}
+      #  env:
+      #    KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
     
     # Run Tests
     
