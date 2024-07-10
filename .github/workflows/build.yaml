@@ -70,7 +70,6 @@ jobs:
           release: webapp-${{ steps.version.outputs.VERSION }}
           namespace: webapp
           chart: app
-          helm: helm # Not using helm3 to prevent prerequisite of namespace
           token: ${{ github.token }}
           atomic: true
           version: ${{ steps.version.outputs.VERSION }}
