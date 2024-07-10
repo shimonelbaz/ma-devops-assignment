@@ -69,7 +69,7 @@ jobs:
         with:
           release: webapp-${{ steps.version.outputs.VERSION }}
           namespace: webapp
-          chart: /helm/
+          chart: helm/
           token: ${{ github.token }}
           atomic: true
           values: |
