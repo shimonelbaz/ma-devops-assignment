@@ -15,5 +15,6 @@ This code assumes that you have an available Kubernetes cluster with the followi
 1. Accessible Nginx Ingress endpoint (if needed, basic yaml can be found under cluster-prerequisites folder)
 2. Kcert operator installed for SSL management (if needed, basic yaml can be found under cluster-prerequisites folder)
 3. KubeConfig should be available as a github secret
+4. webapp namespace shuold exist in advance 
 
 ### Instructions

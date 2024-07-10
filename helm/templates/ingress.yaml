@@ -1,7 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Chart.Name }}
+  #name: {{ .Chart.Name }}
+  name: {{ .Values.service.name }}
   labels:
     kcert.dev/ingress: "managed"
   annotations:
