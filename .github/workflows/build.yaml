@@ -11,7 +11,11 @@ on:
             - uselessfact
             - funnyfact
 env:
-  SERVIES_URLS: '''{"funnyfact":"https://api.chucknorris.io/jokes/random", "uselessfact":"https://uselessfacts.jsph.pl/api/v2/facts/random"}'''
+  DNS_NAME: "SOME DOMAIN"
+  SERVICE_PARAMETERS: '''{
+                      "funnyfact":{"url":"https://api.chucknorris.io/jokes/random", "port":"8000"}, 
+                      "uselessfact":{"url":"https://uselessfacts.jsph.pl/api/v2/facts/random","port":"8001"
+                      }'''
 
 jobs:
   Build:
@@ -22,6 +26,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Set Service Parameters
+        id: service-parameters
+        run: |
+                service_port=$(echo ${{ env.SERVICE_PARAMETERS }} | jq '.${{ inputs.service }}.port' |tr -d '"' )
+                echo "PORT=$service_port" >> $GITHUB_OUTPUT
+                service_url=$(echo ${{ env.SERVICE_PARAMETERS }} | jq '.${{ inputs.service }}.url' |tr -d '"' )
+                echo "URL=$service_url" >> $GITHUB_OUTPUT
 
       - name: Bump version
         uses: remorses/bump-version@js
@@ -51,15 +63,25 @@ jobs:
           push: true
           tags:  ghcr.io/shimonelbaz/moon_active_task:latest , ghcr.io/shimonelbaz/moon_active_task:${{ steps.version.outputs.VERSION }}
             
-#      - name: Deploy to Lab Environment
-#        uses: cancue/eks-action@9110bc7b42f9adfdb578636aa94cfc50d97c0d99
-#        env:
-#          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws_region: us-east-1
-#          cluster_name: vorlon-dev
-#        with:
-#          args: |
-#            aws eks update-kubeconfig --region us-east-1 --name vorlon-dev
-#            kubectl -n lab rollout restart deployment mock-server-deployment &&
-#            kubectl -n lab rollout status deployment mock-server-deployment
+    # Deploy using Helm charts
+      - name: 'Deploy Using Helm'
+        uses: 'deliverybot/helm@v1'
+        with:
+          release: webapp-${{ steps.version.outputs.VERSION }}
+          namespace: webapp
+          chart: /helm/
+          token: ${{ github.token }}
+          atomic: true
+          values: |
+            image.tag: ${{ steps.version.outputs.VERSION }}
+            env.API_URL: ${{ steps.service-parameters.outputs.URL }}
+            service.port: ${{ steps.service-parameters.outputs.PORT }}
+            service.name: ${{ inputs.service }}
+            service.hostname: ${{ env.DNS_NAME }}
+        env:
+          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
+    
+    # Run Tests
+    
+    
+    #helm install ${{ inputs.service }} helm/ --set image.tag=${{ steps.version.outputs.VERSION }} --set env.API_URL=http://new-api-url.com --set service.port=XXXX --set service.name=XXXX --set  service.hostname=XXXX
