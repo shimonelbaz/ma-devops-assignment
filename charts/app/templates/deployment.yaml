@@ -25,3 +25,5 @@ spec:
               value: "{{ .Values.env.LISTEN_PORT }}"
           ports:
             - containerPort: {{ .Values.service.port }}
+      imagePullSecrets:
+        - name: ghcr-login
