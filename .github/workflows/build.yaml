@@ -75,8 +75,8 @@ jobs:
       # Run Tests
       - name: Test Deployed Service
         run: |
-          ready_status=$(curl -s -o /dev/null --connect-timeout 300 --max-time 300 --retry 10 --retry-delay 10 --retry-all-errors -w "%{http_code}" https://${{ env.DNS_NAME }}/${{ inputs.service }}/ready)
-          api_status=$(curl -s -o /dev/null --connect-timeout 300 --max-time 300 --retry 10 --retry-delay 10 --retry-all-errors -w "%{http_code}" https://${{ env.DNS_NAME }}/${{ inputs.service }})
+          ready_status=$(curl -s -o /dev/null --connect-timeout 300 --max-time 300 --retry 10 --retry-delay 10 --retry-all-errors -w "%{http_code}" https://${{ env.DNS_NAME }}/${{ inputs.service }}/ready -v)
+          api_status=$(curl -s -o /dev/null --connect-timeout 300 --max-time 300 --retry 10 --retry-delay 10 --retry-all-errors -w "%{http_code}" https://${{ env.DNS_NAME }}/${{ inputs.service }} -v)
           if (( $ready_status != 200 || $api_status != 200 )); then
             echo "Endpoints Are Failing!"
             exit 1
